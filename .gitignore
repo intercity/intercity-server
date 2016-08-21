@@ -1,3 +1,4 @@
 intercity-server*/
 *.tar.gz
 vendor/
+.vagrant

@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'faker'
+gem "highline"
 
 group :development do
   gem 'rake'
