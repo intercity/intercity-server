@@ -46,7 +46,7 @@ module IntercityServer
 
     def clone_intercity
       FileUtils.mkdir_p "/var/intercity"
-      `git clone https://github.com/intercity/intercity-docker.git -b master /var/intercity`
+      `git clone https://github.com/intercity/intercity-docker.git -b 0-4-stable /var/intercity`
     end
 
     def copy_configuration
