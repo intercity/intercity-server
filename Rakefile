@@ -1,7 +1,7 @@
 require 'bundler/setup'
 
 PACKAGE_NAME = "intercity-server"
-VERSION = "1.0.0"
+VERSION = "0.1.0"
 TRAVELING_RUBY_VERSION = "20150210-2.1.5"
 
 desc "Package your app"
