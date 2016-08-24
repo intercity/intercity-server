@@ -13,11 +13,5 @@ you installed the CLI and run: `./intercity-server install`; This will ask you
 for the Hostname and From Email and then starts the installation process for
 Intercity.
 
-## Stuff that still needs to be done:
-* [ ] Ask for all the configurable options in the `app.yml`, so that a user
-    never has to open that file to change it.
-* [ ] Start the `./launcher bootstrap app` command
-* [ ] Start the actual Intercity instance with `./launcher start app`
-
 ## License
 This project is licensed under the MIT license.
