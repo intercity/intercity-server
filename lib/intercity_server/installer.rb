@@ -10,6 +10,8 @@ module IntercityServer
     end
 
     def execute
+      check_existing_install
+
       cli = HighLine.new
 
       @hostname = cli.ask("What is the hostname? (e.g.: intercity.example.com)") do |q|
@@ -27,6 +29,12 @@ module IntercityServer
       copy_configuration
       replace_values
 
+      cli.say "---- Building Intercity"
+      build_intercity
+
+      cli.say "---- Starting Intercity"
+      start_intercity
+
       cli.say "---- Done"
     end
 
@@ -38,7 +46,7 @@ module IntercityServer
 
     def clone_intercity
       FileUtils.mkdir_p "/var/intercity"
-      `git clone https://github.com/intercity/intercity-docker.git -b 0-3-stable /var/intercity`
+      `git clone https://github.com/intercity/intercity-docker.git -b master /var/intercity`
     end
 
     def copy_configuration
@@ -55,6 +63,20 @@ module IntercityServer
       config_content = config_content.gsub(/intercity\.example\.com/, hostname)
 
       File.open(config_file, "w") {|file| file.puts config_content }
+    end
+
+    def build_intercity
+      `/var/intercity/launcher bootstrap app`
+    end
+
+    def start_intercity
+      `/var/intercity/launcher start app`
+    end
+
+    def check_existing_install
+      return unless Dir.exist?("/var/intercity")
+      HighLine.new.say "Looks like Intercity is already installed."
+      exit 1
     end
   end
 end
