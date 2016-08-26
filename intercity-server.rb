@@ -29,6 +29,10 @@ class IntercityServerCli
   end
 
   def install
+    if installed?
+      puts "Intercity is already installed."
+      exit 1
+    end
     IntercityServer::Installer.execute
   end
 
