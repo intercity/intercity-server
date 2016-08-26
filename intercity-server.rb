@@ -31,6 +31,8 @@ class IntercityServerCli
   def install
     if installed?
       puts "Intercity is already installed."
+      puts "If you want to update your Intercity instance, run:"
+      puts "  intercity-server update"
       exit 1
     end
     IntercityServer::Installer.execute
