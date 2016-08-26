@@ -49,9 +49,9 @@ module IntercityServer
       cli.say "---- Starting Intercity"
       start_intercity
 
-      cli.say "---- Done"
-      cli.say "IMPORTANT: Keep in mind that it can take up to 3 minutes until your"\
-        "Intercity instance is reachable over HTTPS. This is due to the delay at"\
+      cli.say "---- Done\n\n"
+      cli.say "IMPORTANT: \nKeep in mind that it can take up to 3 minutes until your\n"\
+        "Intercity instance is reachable over HTTPS.\n This is due to the delay at"\
         "Lets Encrypt with issueing the certificates" if use_ssl
     end
 
