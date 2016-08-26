@@ -52,7 +52,7 @@ module IntercityServer
       cli.say "---- Done"
       cli.say "IMPORTANT: Keep in mind that it can take up to 3 minutes until your"\
         "Intercity instance is reachable over HTTPS. This is due to the delay at"\
-        "Lets Encrypt with issueing the certificates" if enable_ssl
+        "Lets Encrypt with issueing the certificates" if use_ssl
     end
 
     private
@@ -83,7 +83,7 @@ module IntercityServer
       config_content = File.read config_file
       config_content = config_content.gsub(/intercity\.example\.com/, hostname)
 
-      if enable_ssl
+      if use_ssl
         config_content = config_content.gsub(/#- "templates\/web\.ssl\.template.yml"/, '- "templates/web.ssl.template.yml"')
         config_content = config_content.gsub(/#- "templates\/web\.letsencrypt\.ssl\.template.yml"/,
                                              '- "templates/web.letsencrypt.ssl.template.yml"')
@@ -100,7 +100,7 @@ module IntercityServer
 
     def start_intercity
       `/var/intercity/launcher start app`
-      `/var/intercity/launcher restart app` if enable_ssl
+      `/var/intercity/launcher restart app` if use_ssl
     end
 
     def check_existing_install
