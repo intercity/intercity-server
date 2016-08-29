@@ -32,13 +32,11 @@ mv /tmp/${dir_name} /var/intercity-cli
 
 rm /tmp/${file_name}
 
-echo "Starting to install Intercity"
-/var/intercity-cli/intercity-server install
-
 echo "Installed: Intercity CLI (Version ${version})"
 echo
-echo "Please restart your terminal session or to get started right away run:"
-echo " source ${source_file}"
+echo
+echo "To start the installation of your Intercity Instance run:"
+echo "  source ${source_file} && intercity-server install"
 echo
 echo "Run 'intercity-server' to see help"
 echo
