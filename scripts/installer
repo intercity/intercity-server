@@ -32,9 +32,6 @@ mv /tmp/${dir_name} /var/intercity-cli
 
 rm /tmp/${file_name}
 
-echo "Starting to install Intercity"
-/var/intercity-cli/intercity-server install
-
 echo "Installed: Intercity CLI (Version ${version})"
 echo
 echo
