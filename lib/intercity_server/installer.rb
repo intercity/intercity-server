@@ -35,7 +35,7 @@ module IntercityServer
 
       cli.choose do |menu|
         menu.prompt = "Do you want to run Intercity on a custom port?\n" \
-          "This will allow you to run Intercity and your apps on the same server.\n" \
+          "This allows you to run both the Intercity control panel and deploy your apps on this server.\n" \
           "Intercity will then be reachable on #{@hostname}:#{use_ssl ? "8843" : "8880"}."
         menu.choice(:yes) { @use_custom_port = true }
         menu.choices(:no) { @use_custom_port = false }
