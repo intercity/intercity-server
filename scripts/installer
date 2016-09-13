@@ -4,7 +4,7 @@ version=0.1.0
 
 dir_name=intercity-server-${version}-linux-x86_64
 file_name=${dir_name}.tar.gz
-download_url=https://intercityup.com/downloads/linux_x86_64/${file_name}
+download_url=https://intercity.io/downloads/linux_x86_64/${file_name}
 
 bin_dir="/var/intercity-cli"
 source_line="export PATH=\$PATH:${bin_dir}"
