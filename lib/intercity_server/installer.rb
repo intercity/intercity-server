@@ -36,7 +36,7 @@ module IntercityServer
       cli.choose do |menu|
         menu.prompt = "Do you want to run Intercity on a custom port?\n" \
           "This will allow you to run Intercity and your apps on the same server.\n" \
-          "Intercity will then be reachable on #{@hostname}:#{use_ssl ? "8443" : "880"}."
+          "Intercity will then be reachable on #{@hostname}:#{use_ssl ? "8843" : "8880"}."
         menu.choice(:yes) { @use_custom_port = true }
         menu.choices(:no) { @use_custom_port = false }
       end
@@ -60,7 +60,7 @@ module IntercityServer
       cli.say "---- Done\n\n"
       address = @hostname
       if use_custom_port
-        address = "#{address}:#{use_ssl ? "8443" : "880"}"
+        address = "#{address}:#{use_ssl ? "8843" : "8880"}"
       end
       cli.say "You can reach your brand new Intercity instance on: #{address}."
 
@@ -111,8 +111,8 @@ module IntercityServer
       end
 
       if use_custom_port
-        config_content = config_content.gsub(/80:80/, "880:80")
-        config_content = config_content.gsub(/443:443/, "8443:443")
+        config_content = config_content.gsub(/80:80/, "8880:80")
+        config_content = config_content.gsub(/443:443/, "8843:443")
       end
 
       File.open(config_file, "w") {|file| file.puts config_content }
