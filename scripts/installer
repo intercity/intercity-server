@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-version=0.1.0
+version=0.2.0
 
 dir_name=intercity-server-${version}-linux-x86_64
 file_name=${dir_name}.tar.gz
