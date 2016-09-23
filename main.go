@@ -1,12 +1,9 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strings"
 
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
@@ -37,34 +34,34 @@ func main() {
 			buildIntercity()
 			startIntercity()
 		} else {
-			println("Error: %", err)
 			println("Intercity is already installed.")
 			println("If you want to update your Intercity instance, run:")
 			println("\t intercity-server update")
 		}
 
 	case update.FullCommand():
-		println("Going to update your Intercity instance")
+		if _, err := os.Stat("/var/intercity"); os.IsNotExist(err) {
+			println("Intercity is not installed.")
+			println("To install Intercity, run:")
+			println("\t intercity-server install")
+		} else {
+			updateIntercity()
+		}
 
-	case update.FullCommand():
-		println("Going to restart your Intercity instance")
+	case restart.FullCommand():
+		if _, err := os.Stat("/var/intercity"); os.IsNotExist(err) {
+			println("Intercity is not installed.")
+			println("To install Intercity, run:")
+			println("\t intercity-server install")
+		} else {
+			restartIntercity()
+		}
 
 	case version.FullCommand():
 		println("intercity-server:", "0.2.0")
 		println("intercity-docker:", "0.4.1")
 		println("intercity-web:", "0.2.0")
 	}
-}
-
-func exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return true, err
 }
 
 func installDocker() {
@@ -137,17 +134,18 @@ func startIntercity() {
 	println("     Done")
 }
 
-func runCommand(cmd string) (output string, err error) {
-	out, err := exec.Command("bash", "-c", cmd).Output()
-	return string(out), err
+func updateIntercity() {
+	println("---- Updating Intercity")
+	if _, err := runCommand("/var/intercity/launcher rebuild app"); err != nil {
+		log.Fatal(err)
+	}
+	println("     Done")
 }
 
-func replaceData(path string, originalString string, newString string) (err error) {
-	if fileData, err := ioutil.ReadFile(path); err != nil {
+func restartIntercity() {
+	println("---- Restarting Intercity")
+	if _, err := runCommand("/var/intercity/launcher restart app"); err != nil {
 		log.Fatal(err)
-	} else {
-		newContent := []byte(strings.Replace(string(fileData), originalString, newString, -1))
-		err = ioutil.WriteFile(path, newContent, 0)
 	}
-	return err
+	println("     Done")
 }
