@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
@@ -32,4 +33,14 @@ func exists(path string) (bool, error) {
 		return false, nil
 	}
 	return true, err
+}
+
+func checkValidDomain(domain string) bool {
+	var validID = regexp.MustCompile(`^([a-z0-9\*-]+\.)*[a-z0-9\*-]+$`)
+	return validID.MatchString(domain)
+}
+
+func checkValidEmail(email string) bool {
+	var validID = regexp.MustCompile(`([^@]+)@([^\.]+)`)
+	return validID.MatchString(email)
 }

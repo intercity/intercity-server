@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,26 +14,68 @@ var (
 
 	version = app.Command("version", "Show the version of installed Intercity and Intercity server")
 
-	install         = app.Command("install", "Install Intercity on this server.")
-	installHostname = install.Arg("hostname", "The hostname you want to run Intercity on.").Required().String()
+	install           = app.Command("install", "Install Intercity on this server.")
+	installHostname   = install.Flag("hostname", "The hostname you want to run Intercity on.").Required().String()
+	installCustomPort = install.Flag("custom-port", "Use custom port for Intercity").Bool()
+	installUseSSL     = install.Flag("use-ssl", "Enable SSL using Let's Encrypt").Bool()
+	installSSLEmail   = install.Flag("ssl-email", "Email address to use for Let's Encrypt").String()
 
 	update = app.Command("update", "Update your Intercity instance.")
 
 	restart = app.Command("restart", "Restart your Intercity instance")
+
+	current_cli_version = "0.3.0"
 )
 
 func main() {
-	kingpin.Version("0.3.0")
+	kingpin.Version(current_cli_version)
 
 	switch kingpin.MustParse(app.Parse(os.Args[1:])) {
 
 	case install.FullCommand():
 		if _, err := os.Stat("/var/intercity"); os.IsNotExist(err) {
+			if !checkValidDomain(*installHostname) {
+				println("Hostname is not valid.")
+				println("Installation cannot continue.")
+				os.Exit(1)
+			}
+
+			if *installUseSSL && !checkValidEmail(*installSSLEmail) {
+				println("In order to enable SSL you need to provide a valid email address")
+				println("that we can register with Let's Encrypt.")
+				println("You can do so with the '--ssl-email=' flag")
+				os.Exit(1)
+			}
+
 			installDocker()
 			downloadIntercity()
 			configureIntercity()
 			buildIntercity()
 			startIntercity()
+
+			println("")
+			println("Congratulations! Intercity is now installed.")
+			println("You can reach your brand new Intercity installation on:")
+
+			if *installCustomPort {
+				if *installUseSSL {
+					println(fmt.Sprintf("    %v%v:8443", determineProtocol(), *installHostname))
+				} else {
+					println(fmt.Sprintf("    %v%v:880", determineProtocol(), *installHostname))
+				}
+			} else {
+				println(fmt.Sprintf("    %v%v", determineProtocol(), *installHostname))
+			}
+
+			if *installUseSSL {
+				println("====================")
+				println("=     WARNING      =")
+				println("====================")
+				println("Please keep in mind that Let's encrypt can take up to 5 minutes")
+				println("to issue the certificate. Untill this is done")
+				println("your Intercity server will be unreachable")
+			}
+
 		} else {
 			println("Intercity is already installed.")
 			println("If you want to update your Intercity instance, run:")
@@ -58,9 +101,7 @@ func main() {
 		}
 
 	case version.FullCommand():
-		println("intercity-server:", "0.2.0")
-		println("intercity-docker:", "0.4.1")
-		println("intercity-web:", "0.2.0")
+		println("intercity-server:", current_cli_version)
 	}
 }
 
@@ -108,6 +149,36 @@ func configureIntercity() {
 	if err := replaceData(configFile, "intercity.example.com", *installHostname); err != nil {
 		log.Fatal(err)
 	}
+
+	if *installCustomPort {
+		configFile := "/var/intercity/containers/app.yml"
+		if err := replaceData(configFile, "80:80", "8880:80"); err != nil {
+			log.Fatal(err)
+		}
+
+		if err := replaceData(configFile, "443:443", "8443:443"); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if *installUseSSL {
+		configFile := "/var/intercity/containers/app.yml"
+		if err := replaceData(configFile, "#- \"templates/web.ssl.template.yml\"",
+			"- \"templates/web.ssl.template.yml\""); err != nil {
+			log.Fatal(err)
+		}
+
+		if err := replaceData(configFile, "#- \"templates/web.letsencrypt.ssl.template.yml\"",
+			"- \"templates/web.letsencrypt.ssl.template.yml\""); err != nil {
+			log.Fatal(err)
+		}
+
+		if err := replaceData(configFile, "LETSENCRYPT_ACCOUNT_EMAIL: \"example@example.com\"",
+			"LETSENCRYPT_ACCOUNT_EMAIL: \""+*installSSLEmail+"\""); err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	println("     Done")
 }
 
@@ -148,4 +219,12 @@ func restartIntercity() {
 		log.Fatal(err)
 	}
 	println("     Done")
+}
+
+func determineProtocol() string {
+	if *installUseSSL {
+		return "https://"
+	} else {
+		return "http://"
+	}
 }
